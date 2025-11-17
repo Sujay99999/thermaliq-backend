@@ -6,6 +6,7 @@
  */
 
 const { analyzeThermalStrategy } = require('../ashrae-formulas-corrected-new');
+const { calculateRebateEligibility } = require('./rebateEligibilityService');
 
 /**
  * Calculate HVAC strategy based on building properties and user preferences
@@ -74,6 +75,12 @@ async function calculateHVACStrategy(formData, roomData = {}) {
     absenceEndTime,
     absenceStartTime
   });
+
+  // Calculate rebate eligibility
+  const eligibility = calculateRebateEligibility(formData);
+  
+  // Add eligibility to result
+  result.rebateEligibility = eligibility;
 
   return result;
 }

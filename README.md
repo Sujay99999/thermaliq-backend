@@ -49,6 +49,24 @@ npm start
 
 The server will start on `http://localhost:3000` (or the port specified in `.env`).
 
+## Helper Scripts
+
+### Get Your Local IP Address
+Useful for connecting from physical devices:
+```bash
+npm run get-ip
+```
+
+### Test Backend Connection
+Test if the backend is accessible:
+```bash
+# Test localhost
+npm run test-connection
+
+# Test specific IP (for physical devices)
+npm run test-connection -- 192.168.1.100
+```
+
 ## API Endpoints
 
 ### Health Check

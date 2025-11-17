@@ -69,16 +69,38 @@ router.post('/', async (req, res, next) => {
 
     // Validate required form data fields
     const requiredFields = ['outdoorTemp', 'desiredTemp', 'absenceDuration', 'floorArea'];
-    const missingFields = requiredFields.filter(field => !formData[field]);
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field];
+      // Check if field is missing, null, undefined, empty string, or not a valid number
+      return value === undefined || 
+             value === null || 
+             value === '' || 
+             (typeof value === 'number' && isNaN(value)) ||
+             (typeof value === 'string' && (value.trim() === '' || isNaN(Number(value))));
+    });
     
     if (missingFields.length > 0) {
       return res.status(400).json({
         success: false,
         error: {
-          message: `Missing required fields: ${missingFields.join(', ')}`
+          message: `Missing required fields: ${missingFields.join(', ')}`,
+          received: {
+            outdoorTemp: formData.outdoorTemp,
+            desiredTemp: formData.desiredTemp,
+            absenceDuration: formData.absenceDuration,
+            floorArea: formData.floorArea
+          }
         }
       });
     }
+    
+    // Ensure numeric fields are actually numbers
+    const numericFields = ['outdoorTemp', 'desiredTemp', 'absenceDuration', 'floorArea'];
+    numericFields.forEach(field => {
+      if (typeof formData[field] === 'string') {
+        formData[field] = Number(formData[field]);
+      }
+    });
 
     // Calculate HVAC strategy
     const result = await calculateHVACStrategy(formData, roomData || {});
